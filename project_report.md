@@ -1,7 +1,7 @@
-# SmartDent AI: Project Documentation & Technical Report
+# ProviDent AI: Project Documentation & Technical Report
 
 ## 1. Project Overview
-**SmartDent AI** is a production-ready medical imaging platform designed for intraoral dental analysis. The system leverages deep learning to automate the detection of common dental issues from intraoral photographs. It provides clinicians and patients with automated reports on teeth segmentation, alignment, symmetry, and pathology (cavity and gum disease).
+**ProvitDent AI** is a production-ready medical imaging platform designed for intraoral dental analysis. The system leverages deep learning to automate the detection of common dental issues from intraoral photographs. It provides clinicians and patients with automated reports on teeth segmentation, alignment, symmetry, and pathology (cavity and gum disease).
 
 ### Key Features:
 - **Teeth Segmentation**: Precise pixel-level masking of teeth using U-Net.

@@ -72,10 +72,51 @@ SECRET_KEY="your-super-secret-key"
 DATABASE_URL="sqlite:///./dental_analysis.db"
 MODEL_DEVICE="cpu" # or "cuda"
 ```
+## 📊 Dataset
+
+This project uses the **Oral Diseases Dataset** from Kaggle:
+
+- Dataset: https://www.kaggle.com/datasets/salmansajid05/oral-diseases  
+- It contains images of multiple dental conditions such as caries, gingivitis, ulcers, and tooth discoloration.
 
 ---
 
+## ⚠️ Note
+The dataset is **NOT included in this repository** due to size limitations.  
+You need to download it manually using the Kaggle API.
+
+---
+
+## 🚀 How to Download Dataset Using Kaggle API
+
+### 🔹 Step 1: Install Kaggle
+```bash
+pip install kaggle
+---
+
 ## 🧠 Model Training & Data
+🔹 Get Kaggle API Key
+Go to Kaggle → Account Settings
+Click "Create New API Token"
+This will download a file:
+
+kaggle.json 
+
+{
+  "username": "your_kaggle_username",
+  "key": "your_api_key"
+}
+
+```bash
+backend/
+  data/
+    caries/
+    gingivitis/
+    ulcer/
+    tooth_discoloration/
+    calculus/
+    hypodontia/
+```
 
 ### 1. Data Acquisition
 Download the clinical dental dataset from Kaggle:
