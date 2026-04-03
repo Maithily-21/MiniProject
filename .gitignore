@@ -1,0 +1,12 @@
+backend/venv/
+backend/__pycache__/
+backend/uploads/*
+backend/outputs/*
+backend/*.db
+.vscode/
+.idea/
+*.pyc
+__pycache__/
+.env
+.ipynb_checkpoints/
+*.log
