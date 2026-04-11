@@ -26,7 +26,7 @@ from services.staining_service import analyze_staining
 from database.schemas import AnalysisResult, ReportListResponse, ReportResponse
 
 # Services
-from services.segmentation_service import run_segmentation
+from services.segmentation_service import run_segmentation 
 from services.alignment_service    import compute_alignment_score
 from services.symmetry_service     import compute_symmetry_score
 from services.spacing_service      import analyze_spacing

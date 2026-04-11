@@ -1,13 +1,9 @@
 import numpy as np
 
 def analyze_gum_visibility(segmentation_mask: np.ndarray) -> str:
-    """
-    Analyzes the ratio of gum exposure to teeth using the segmentation mask.
-    """
     teeth_pixels = np.count_nonzero(segmentation_mask)
     total_pixels = segmentation_mask.size
     
-    # Gum pixels are considered the non-teeth pixels here
     gum_pixels = total_pixels - teeth_pixels
     
     gum_ratio = 0.0

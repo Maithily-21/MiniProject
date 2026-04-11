@@ -2,9 +2,6 @@ import cv2
 import numpy as np
 
 def analyze_spacing(segmentation_mask: np.ndarray) -> str:
-    """
-    Analyzes horizontal spacing between teeth contours to generate cosmetic spacing feedback.
-    """
     if segmentation_mask.dtype != np.uint8:
         mask_8u = (segmentation_mask * 255).astype(np.uint8)
     else:
