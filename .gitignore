@@ -10,3 +10,5 @@ __pycache__/
 .env
 .ipynb_checkpoints/
 *.log
+backend/data/
+*.zip
