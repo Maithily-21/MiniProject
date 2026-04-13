@@ -40,18 +40,18 @@ export function SignInScreen({ onSignIn }: { onSignIn: () => void }) {
   const displayError = localError || error
 
   return (
-    <div className="flex flex-col h-full p-6 pb-2 justify-center">
-      <div className="flex-1 flex flex-col justify-center w-full">
+    <div className="flex flex-col p-6 pt-5 pb-4">
+      <div className="w-full">
         {/* Logo and Title */}
-        <div className="text-center mb-8 flex flex-col items-center">
-          <div className="relative mb-5">
-            <div className="w-[5.5rem] h-[5.5rem] flex items-center justify-center text-[#2E6DD1]">
+        <div className="text-center mb-5 flex flex-col items-center">
+          <div className="relative mb-3">
+            <div className="w-[4.5rem] h-[4.5rem] flex items-center justify-center text-[#2E6DD1]">
               <svg viewBox="0 0 100 100" fill="currentColor" className="w-full h-full drop-shadow-[0_8px_16px_rgba(46,109,209,0.25)]">
                  <path d="M50 8 C25 8 8 26 8 50 C8 62.5 13.5 73.5 22.5 81 L19 93 L32.5 89.5 C38.5 91.5 45 92 50 92 C75 92 92 74 92 50 C92 26 75 8 50 8 Z" />
               </svg>
               {/* White tooth inside the bubble */}
               <div className="absolute inset-0 flex items-center justify-center pb-2">
-                <svg viewBox="0 0 24 24" fill="white" className="w-10 h-10">
+                <svg viewBox="0 0 24 24" fill="white" className="w-9 h-9">
                    <path d="M12 21 C8 21 5 18 5 14 C5 10 7 7 12 7 C17 7 19 10 19 14 C19 18 16 21 12 21 Z" />
                    <path d="M12 21 V14" stroke="#2E6DD1" strokeWidth="2" strokeLinecap="round" />
                    <path d="M9 21 V17" stroke="#2E6DD1" strokeWidth="2" strokeLinecap="round" />
@@ -60,10 +60,10 @@ export function SignInScreen({ onSignIn }: { onSignIn: () => void }) {
               </div>
             </div>
           </div>
-          <h1 className="text-[2.2rem] font-extrabold mb-1 tracking-tight text-[#1D4ED8]">
+          <h1 className="text-[1.8rem] font-extrabold mb-0.5 tracking-tight text-[#1D4ED8]">
             Provident
           </h1>
-          <p className="font-semibold text-[14px] text-[#5A7B9B]">
+          <p className="font-semibold text-[13px] text-[#5A7B9B]">
             AI Smile Analysis Assistant
           </p>
         </div>

@@ -49,7 +49,7 @@ export function AnalysisFlow() {
   }
 
   // Determine when to show the floating message
-  const showFloatingMessage = activeTab === 'home' && (step === "SIGN_IN" || step === "ANALYZE_START" || step === "UPLOAD" || step === "DETAILS" || step === "QUESTIONS")
+  const showFloatingMessage = activeTab === 'home' && (step === "ANALYZE_START" || step === "UPLOAD" || step === "QUESTIONS")
 
   const handleAnswer = (answer: boolean) => {
     if (currentQuestionIndex < QUESTIONS.length - 1) {
@@ -70,8 +70,8 @@ export function AnalysisFlow() {
   return (
     <LayoutWrapper 
       floatingMessage={showFloatingMessage ? getFloatingMessage() : undefined}
-      showChat={true}
-      showBottomNav={true}
+      showChat={step !== "SIGN_IN" && step !== "DETAILS"}
+      showBottomNav={step !== "SIGN_IN" && step !== "DETAILS"}
       activeTab={activeTab}
       onTabChange={setActiveTab}
     >

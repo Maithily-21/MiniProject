@@ -31,21 +31,23 @@ export function LayoutWrapper({
           {children}
         </div>
 
-        <div className="flex flex-col z-20 shrink-0 bg-transparent pt-4">
-          {/* Floating Message */}
-          {floatingMessage && (
-            <div className="w-full">
-              <FloatingMessage message={floatingMessage} />
-            </div>
-          )}
+        {(showBottomNav || floatingMessage) && (
+          <div className="flex flex-col z-20 shrink-0 bg-transparent pt-4">
+            {/* Floating Message */}
+            {floatingMessage && (
+              <div className="w-full">
+                <FloatingMessage message={floatingMessage} />
+              </div>
+            )}
 
-          {/* Bottom Nav with built-in Chat */}
-          {showBottomNav && (
-            <div className="w-full mt-2">
-              <BottomNav activeTab={activeTab} onTabChange={onTabChange} showChat={showChat} />
-            </div>
-          )}
-        </div>
+            {/* Bottom Nav with built-in Chat */}
+            {showBottomNav && (
+              <div className="w-full mt-2">
+                <BottomNav activeTab={activeTab} onTabChange={onTabChange} showChat={showChat} />
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
