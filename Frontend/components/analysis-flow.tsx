@@ -10,6 +10,7 @@ import { QuestionScreen } from "./question-screen"
 import { ReportScreen } from "./analysis-report"
 import { AssistantScreen } from "./assistant-screen"
 import { ReportsScreen } from "./reports-screen"
+import { type AnalysisResult } from "@/lib/api"
 
 const QUESTIONS = [
   "Do you experience tooth pain?",
@@ -24,6 +25,7 @@ export function AnalysisFlow() {
   >("SIGN_IN")
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
 
   const getFloatingMessage = () => {
     if (activeTab === 'reports') return undefined;
@@ -98,7 +100,8 @@ export function AnalysisFlow() {
           {step === "UPLOAD" && (
             <UploadScreen 
               onBack={() => setStep("ANALYZE_START")}
-              onAnalyze={() => {
+              onAnalyze={(result) => {
+                setAnalysisResult(result)
                 setCurrentQuestionIndex(0);
                 setStep("QUESTIONS")
               }} 
@@ -117,13 +120,17 @@ export function AnalysisFlow() {
 
           {step === "REPORT" && (
             <ReportScreen 
+              analysisResult={analysisResult}
               onBack={() => setStep("QUESTIONS")}
               onDetailedReport={() => setStep("ASSISTANT")} 
             />
           )}
 
           {step === "ASSISTANT" && (
-            <AssistantScreen onBack={() => setStep("REPORT")} />
+            <AssistantScreen 
+              analysisResult={analysisResult}
+              onBack={() => setStep("REPORT")} 
+            />
           )}
         </>
       )}

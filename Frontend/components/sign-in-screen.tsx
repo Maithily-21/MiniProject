@@ -1,8 +1,44 @@
 "use client"
 
-import { MessageSquare } from "lucide-react"
+import { useState } from "react"
+import { useAuth } from "@/contexts/auth-context"
+import { Loader2 } from "lucide-react"
 
 export function SignInScreen({ onSignIn }: { onSignIn: () => void }) {
+  const { login, register, loading, error, clearError } = useAuth()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [isRegister, setIsRegister] = useState(false)
+  const [localError, setLocalError] = useState<string | null>(null)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLocalError(null)
+    clearError()
+
+    if (!email || !password) {
+      setLocalError("Please enter email and password")
+      return
+    }
+    if (password.length < 6) {
+      setLocalError("Password must be at least 6 characters")
+      return
+    }
+
+    try {
+      if (isRegister) {
+        await register(email, password)
+      } else {
+        await login(email, password)
+      }
+      onSignIn()
+    } catch {
+      // Error is set in auth context
+    }
+  }
+
+  const displayError = localError || error
+
   return (
     <div className="flex flex-col h-full p-6 pb-2 justify-center">
       <div className="flex-1 flex flex-col justify-center w-full">
@@ -35,35 +71,63 @@ export function SignInScreen({ onSignIn }: { onSignIn: () => void }) {
         {/* Login Form */}
         <div className="mb-7 px-2">
           <h2 className="text-[13px] font-semibold mb-5 text-center text-[#5A7B9B]">
-            Sign in to start analyzing your smile photos.
+            {isRegister ? "Create an account to get started." : "Sign in to start analyzing your smile photos."}
           </h2>
 
-          <div className="space-y-4">
+          {displayError && (
+            <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-[13px] font-medium text-center">
+              {displayError}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
             <input 
+              id="email-input"
               className="w-full bg-white px-5 py-4 rounded-2xl text-[15px] font-medium shadow-[0_2px_10px_rgba(30,96,220,0.04)] border border-blue-50 outline-none text-[#3A5D84] placeholder-[#94b1c9]"
               placeholder="Email" 
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={loading}
             />
             <div className="relative">
               <input 
+                id="password-input"
                 className="w-full bg-white px-5 py-4 rounded-2xl text-[15px] font-medium shadow-[0_2px_10px_rgba(30,96,220,0.04)] border border-blue-50 outline-none text-[#3A5D84] placeholder-[#94b1c9]"
                 placeholder="Password" 
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
               />
-              <button className="absolute right-5 top-1/2 -translate-y-1/2 text-[12px] font-bold text-[#4A88EF]">
-                Forgot password?
-              </button>
             </div>
 
             <div className="pt-2">
               <button
-                onClick={onSignIn}
-                className="w-full py-4 rounded-2xl text-[16px] font-bold text-white shadow-[0_8px_20px_rgba(30,96,220,0.25)] active:scale-[0.98] transition-all bg-gradient-to-r from-[#2E6DD1] to-[#1D4ED8]"
+                id="sign-in-button"
+                type="submit"
+                disabled={loading}
+                className="w-full py-4 rounded-2xl text-[16px] font-bold text-white shadow-[0_8px_20px_rgba(30,96,220,0.25)] active:scale-[0.98] transition-all bg-gradient-to-r from-[#2E6DD1] to-[#1D4ED8] disabled:opacity-60 flex items-center justify-center gap-2"
               >
-                Sign In
+                {loading ? (
+                  <>
+                    <Loader2 size={20} className="animate-spin" />
+                    {isRegister ? "Creating Account..." : "Signing In..."}
+                  </>
+                ) : (
+                  isRegister ? "Create Account" : "Sign In"
+                )}
               </button>
             </div>
-          </div>
+          </form>
+
+          <button
+            id="toggle-auth-mode"
+            onClick={() => { setIsRegister(!isRegister); setLocalError(null); clearError() }}
+            className="w-full text-center text-[13px] font-semibold text-[#4A88EF] mt-4"
+          >
+            {isRegister ? "Already have an account? Sign In" : "Don't have an account? Register"}
+          </button>
         </div>
 
         {/* Social Login */}

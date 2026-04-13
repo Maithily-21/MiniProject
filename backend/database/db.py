@@ -65,18 +65,30 @@ def init_db() -> None:
     # Seed a default test user (ID 1) for rapid frontend testing
     session = SessionLocal()
     try:
-        user = session.query(models.User).filter(models.User.id == 1).first()
+        user = session.query(models.User).filter(models.User.email == "test@provident.ai").first()
         if not user:
             from core.security import hash_password
             test_user = models.User(
-                id=1,
                 email="test@provident.ai",
                 password=hash_password("password"),
                 is_active=True
             )
             session.add(test_user)
-            session.commit()
-            print("🌱 Default test user seeded (ID 1)")
+            print("🌱 Default test user seeded (test@provident.ai)")
+            
+        # Admin user as requested in screenshot
+        admin_user = session.query(models.User).filter(models.User.email == "admin@gmail.com").first()
+        if not admin_user:
+            from core.security import hash_password
+            new_admin = models.User(
+                email="admin@gmail.com",
+                password=hash_password("password"),
+                is_active=True
+            )
+            session.add(new_admin)
+            print("🌱 Admin test user seeded (admin@gmail.com)")
+            
+        session.commit()
     except Exception as e:
         print(f"⚠️ Could not seed test user: {e}")
         session.rollback()

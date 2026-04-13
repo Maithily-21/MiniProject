@@ -5,6 +5,11 @@ and initialises the database on startup.
 """
 
 import os
+import sys
+
+# Ensure terminal output handles emojis correctly on Windows
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding='utf-8')
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
