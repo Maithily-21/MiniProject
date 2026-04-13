@@ -26,9 +26,11 @@ from services.staining_service import analyze_staining
 from database.schemas import AnalysisResult, ReportListResponse, ReportResponse
 
 # Services
-from services.segmentation_service import run_segmentation
+from services.segmentation_service import run_segmentation 
 from services.alignment_service    import compute_alignment_score
 from services.symmetry_service     import compute_symmetry_score
+from services.spacing_service      import analyze_spacing
+from services.gum_visibility_service import analyze_gum_visibility
 from services.cavity_service       import detect_cavity
 from services.gum_service          import detect_gum_disease
 from services.report_service       import create_report, build_api_payload
@@ -130,6 +132,12 @@ async def analyze_image(
         # Step 3 — Symmetry
         symmetry_data = compute_symmetry_score(mask_array)
 
+        # Step 3b - Spacing
+        spacing_tip = analyze_spacing(mask_array)
+
+        # Step 3c - Gum Visibility
+        gum_visibility_tip = analyze_gum_visibility(mask_array)
+
         # Step 4 — Cavity
         cavity_data = detect_cavity(image_path, mask_array)
 
@@ -171,6 +179,8 @@ async def analyze_image(
         gum_data       = gum_data,
         stain_score    = stain_score,
         stain_res      = stain_res,
+        spacing_tip    = spacing_tip,
+        gum_visibility = gum_visibility_tip,
         base_url       = base_url,
     )
 

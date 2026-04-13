@@ -60,32 +60,23 @@ if uploaded_file is not None:
         v_col1, v_col2 = st.columns(2)
         with v_col1:
             st.subheader("Cosmetic Analysis")
-            # Logic for Cosmetic Recommendations
-            align = res.get('alignment_score', 0)
-            symm  = res.get('symmetry_score', 0)
-            stain = res.get('staining_score', 0)
-            st_res = res.get('staining_result', 'N/A')
+            # Using backend-generated text tips
+            st.info(f"🦷 **Alignment Tip:** {res.get('alignment_tip', 'N/A')}")
+            st.info(f"⚖️ **Symmetry Tip:** {res.get('symmetry_tip', 'N/A')}")
+            st.info(f"📏 **Spacing Tip:** {res.get('spacing_tip', 'N/A')}")
+            st.info(f"👄 **Gum Visibility:** {res.get('gum_visibility', 'N/A')}")
             
-            if align < 70:
-                st.warning("⚠️ **Alignment Tip:** Your current score suggests potential crowding or misalignment. Consider an orthodontic consultation or clear aligners (Invisalign).")
-            elif align < 90:
-                st.info("✨ **Cosmetic Tip:** Minor alignment detected. Cosmetic bonding or veneers could further enhance your smile symmetry.")
-            else:
-                st.success("🌟 **Professional Grade:** Your dental alignment is exceptional!")
-
-            if symm < 70:
-                st.warning("⚖️ **Symmetry Tip:** A lower symmetry score often indicates slight shifting. An occlusal check is recommended to ensure a balanced bite.")
-            
-            st.markdown(f"**Surface Analysis:** {st_res}")
-            if stain > 10:
-                st.error("🦷 **Hygiene Alert:** Significant staining or plaque detected. Professional scaling and polishing is recommended to restore enamel purity.")
+            st.markdown(f"**Surface Analysis:** {res.get('staining_status', 'N/A')}")
         
         with v_col2:
             st.subheader("Clinical Summary")
             
             st.markdown("**Pathology Check:**")
-            cav_status = "🔴 Detected" if res['cavity_result'] == "Detected" else "🟢 Healthy"
-            gum_status = "🔴 Review Needed" if res['gum_disease_result'] != "Healthy" else "🟢 Healthy"
+            cavity = res.get('cavity_status', 'No Data')
+            gum = res.get('gum_health', 'No Data')
+            
+            cav_status = "🔴 Detected" if cavity == "Detected" else f"🟢 {cavity}"
+            gum_status = "🔴 Review Needed" if gum != "Healthy" else f"🟢 {gum}"
             
             st.write(f"Cavity Status: **{cav_status}**")
             st.write(f"Gum Health: **{gum_status}**")

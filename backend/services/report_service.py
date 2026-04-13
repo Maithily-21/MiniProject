@@ -141,6 +141,8 @@ def build_api_payload(
     gum_data:       dict,
     stain_score:    float,
     stain_res:      str,
+    spacing_tip:    str,
+    gum_visibility: str,
     base_url:       str,
 ) -> dict:
     """
@@ -179,17 +181,33 @@ def build_api_payload(
         clean = path.replace("\\", "/")
         return f"{base_url}/files/{clean}"
 
-    return {
+    if report.alignment_score < 30:
+        alignment_tip = "Severe alignment irregularity detected. Orthodontic consultation is recommended."
+    elif report.alignment_score <= 70:
+        alignment_tip = "Your current score suggests potential crowding or misalignment. Consider an orthodontic consultation or clear aligners."
+    else:
+        alignment_tip = "Teeth alignment appears balanced."
+
+    if report.symmetry_score < 0.3:
+        symmetry_tip = "A lower symmetry score often indicates slight shifting. An occlusal check is recommended to ensure a balanced bite."
+    else:
+        symmetry_tip = "Smile symmetry appears balanced and aesthetically consistent."
+
+    # Top-level requested dictionary features
+    response_dict = {
+        "alignment_tip": alignment_tip,
+        "symmetry_tip": symmetry_tip,
+        "spacing_tip": spacing_tip,
+        "gum_visibility": gum_visibility,
+        "cavity_status": report.cavity_result,
+        "gum_health": report.gum_disease_result,
+        "staining_status": report.staining_result,
+        
+        # Internal / required by some API handlers
         "report_id":          report.id,
         "image_url":          _url(report.image_path),
         "mask_url":           _url(report.mask_path),
-        "alignment_score":    report.alignment_score,
-        "symmetry_score":     report.symmetry_score,
-        "cavity_result":      report.cavity_result,
-        "cavity_confidence":  report.cavity_confidence,
-        "gum_disease_result": report.gum_disease_result,
-        "gum_confidence":     report.gum_confidence,
-        "staining_score":     report.staining_score,
-        "staining_result":    report.staining_result,
         "report":             nested_report,
     }
+    
+    return response_dict

@@ -88,16 +88,16 @@ class AnalysisResult(BaseModel):
     Structured response returned from POST /analyze.
     Contains all pipeline outputs and a nested human-readable report.
     """
+    alignment_tip: str
+    symmetry_tip: str
+    spacing_tip: str
+    gum_visibility: str
+    cavity_status: str
+    gum_health: str
+    staining_status: str
+    
     image_url:          str
     mask_url:           Optional[str]    = None
-    alignment_score:    float
-    symmetry_score:     float
-    cavity_result:      str
-    cavity_confidence:  float
-    gum_disease_result: str
-    gum_confidence:     float
-    staining_score:     float
-    staining_result:    str
     report:             dict             # Full human-readable nested report
     report_id:          int              # DB primary key for further queries
 
