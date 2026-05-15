@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../providers/chat_provider.dart';
 import '../../providers/app_provider.dart';
 import '../../utils/app_theme.dart';
 import '../../widgets/app_header.dart';
+import '../../services/pdf_service.dart';
 
 class AssistantScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -33,7 +33,8 @@ class _AssistantScreenState extends State<AssistantScreen> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => ChatProvider(),
+      create: (context) =>
+          ChatProvider(context.read<AppProvider>().analysisResult),
       child: _AssistantBody(
         onBack: widget.onBack,
         scrollController: _scrollController,
@@ -61,21 +62,83 @@ class _AssistantBody extends StatelessWidget {
 
     return Column(
       children: [
-        AppHeader(title: 'AI Dentist Assistant', onBack: onBack),
+        AppHeader(
+          title: 'AI Dentist Assistant',
+          onBack: onBack,
+          rightIcon: IconButton(
+            icon: const Icon(Icons.refresh_rounded, color: Colors.white),
+            onPressed: () {
+              chatProvider.refreshChat();
+            },
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          color: const Color(0xFFFFF3CD),
+          child: const Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.warning_amber_rounded,
+                  color: Color(0xFF856404), size: 18),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  "⚠ This AI assistant is specialized for dental report analysis and oral health guidance only. It is not a general-purpose chatbot or professional medical diagnosis system.",
+                  style: TextStyle(color: Color(0xFF856404), fontSize: 11),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              const Text("Language: ",
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textLight)),
+              DropdownButton<String>(
+                value: chatProvider.currentLanguage,
+                isDense: true,
+                underline: const SizedBox(),
+                items: ['English', 'Hindi', 'Marathi']
+                    .map((l) => DropdownMenuItem(
+                        value: l,
+                        child: Text(l, style: const TextStyle(fontSize: 12))))
+                    .toList(),
+                onChanged: (val) {
+                  if (val != null) chatProvider.setLanguage(val);
+                },
+              ),
+            ],
+          ),
+        ),
         Expanded(
           child: ListView.builder(
             controller: scrollController,
-            padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
             itemCount: chatProvider.messages.length +
                 (chatProvider.isTyping ? 1 : 0) +
+                (chatProvider.showTellMeMoreChips ? 1 : 0) +
                 1, // +1 for action buttons
             itemBuilder: (context, index) {
               // Action buttons at end
               if (index ==
                   chatProvider.messages.length +
-                      (chatProvider.isTyping ? 1 : 0)) {
+                      (chatProvider.isTyping ? 1 : 0) +
+                      (chatProvider.showTellMeMoreChips ? 1 : 0)) {
                 return _ActionButtons(
                     onBack: onBack, chatProvider: chatProvider);
+              }
+              // Tell me more chips
+              if (chatProvider.showTellMeMoreChips &&
+                  index ==
+                      chatProvider.messages.length +
+                          (chatProvider.isTyping ? 1 : 0)) {
+                return _TellMeMoreChips(chatProvider: chatProvider);
               }
               // Typing indicator
               if (chatProvider.isTyping &&
@@ -90,6 +153,54 @@ class _AssistantBody extends StatelessWidget {
         _ChatInput(provider: chatProvider),
         const SizedBox(height: 8),
       ],
+    );
+  }
+}
+
+class _TellMeMoreChips extends StatelessWidget {
+  final ChatProvider chatProvider;
+
+  const _TellMeMoreChips({required this.chatProvider});
+
+  @override
+  Widget build(BuildContext context) {
+    final topics = [
+      'Explain Alignment',
+      'Gum Health Tips',
+      'Explain Symmetry',
+      'Cavity Detection Help',
+      'Prevention Advice',
+      'Oral Hygiene Tips',
+      'Should I Visit Dentist?',
+      'Explain My Report',
+      'Treatment Suggestions',
+      'Improve Gum Health'
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12, left: 42),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: topics.map((topic) {
+          String translated = chatProvider.translate(topic);
+          return ActionChip(
+            label: Text(translated,
+                style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.primaryEnd,
+                    fontWeight: FontWeight.bold)),
+            backgroundColor: AppColors.surfaceLight,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: const BorderSide(color: AppColors.primaryEnd, width: 1.5),
+            ),
+            onPressed: () {
+              chatProvider.sendMessage(translated);
+            },
+          );
+        }).toList(),
+      ),
     );
   }
 }
@@ -161,8 +272,7 @@ class _MessageBubble extends StatelessWidget {
                   bottomLeft: Radius.circular(20),
                   bottomRight: Radius.circular(20),
                 ),
-                border:
-                    Border.all(color: AppColors.borderLight.withOpacity(0.5)),
+                border: Border.all(color: AppColors.borderLight.withOpacity(0.5)),
                 boxShadow: const [
                   BoxShadow(
                     color: Color(0x0A000000),
@@ -171,15 +281,58 @@ class _MessageBubble extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Text(
-                message.text,
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  height: 1.4,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    message.text,
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      height: 1.4,
+                    ),
+                  ),
+                  if (message.reportCards != null) ...[
+                    const SizedBox(height: 16),
+                    ...message.reportCards!.map((card) => _buildReportCard(card['title']!, card['value']!)),
+                  ]
+                ],
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReportCard(String title, String value) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceLight,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.borderLight.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primaryEnd,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 13,
+              color: AppColors.textPrimary,
+              height: 1.4,
             ),
           ),
         ],
@@ -202,9 +355,15 @@ class _BotAvatar extends StatelessWidget {
           BoxShadow(color: Color(0x0A000000), blurRadius: 4),
         ],
       ),
-      child: const Center(
-        child: Icon(Icons.smart_toy_outlined,
-            color: AppColors.primaryStart, size: 18),
+      clipBehavior: Clip.hardEdge,
+      child: Image.asset(
+        'assets/images/logo.png',
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return const Center(
+            child: Icon(Icons.smart_toy_outlined, color: AppColors.primaryStart, size: 18),
+          );
+        },
       ),
     );
   }
@@ -308,7 +467,7 @@ class _ActionButtons extends StatelessWidget {
         GestureDetector(
           onTap: () {
             // Tell me more - send a message to the chat
-            chatProvider.sendMessage('Tell me more about my dental analysis');
+            chatProvider.triggerTellMeMore();
           },
           child: const _ActionBtn(
               icon: Icons.phone_outlined, label: 'Tell me more'),
@@ -316,25 +475,15 @@ class _ActionButtons extends StatelessWidget {
         const SizedBox(height: 10),
         GestureDetector(
           onTap: () async {
-            // Download Report - copy to clipboard
+            // Download Report - generate PDF
             final provider = context.read<AppProvider>();
             final analysis = provider.analysisResult;
             if (analysis != null) {
-              final reportText = '''
-Dental Analysis Report
-
-Alignment: ${analysis.alignmentTip}
-Symmetry: ${analysis.symmetryTip}
-Staining: ${analysis.stainingStatus}
-Gum Health: ${analysis.gumHealth}
-Cavity Status: ${analysis.cavityStatus}
-
-Recommendations: ${analysis.report['recommendations'] ?? 'Consult a dentist'}
-''';
-              await Clipboard.setData(ClipboardData(text: reportText));
+              await PdfService.generateAndPrintReport(analysis);
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Report copied to clipboard!')),
+                  const SnackBar(
+                      content: Text('Report downloaded successfully')),
                 );
               }
             } else {

@@ -97,23 +97,20 @@ class _LogoSection extends StatelessWidget {
     return Column(
       children: [
         SizedBox(
-          width: 88,
-          height: 88,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              CustomPaint(
-                size: const Size(88, 88),
-                painter: _BubblePainter(),
-              ),
-              Positioned(
-                bottom: 8,
-                child: CustomPaint(
-                  size: const Size(40, 40),
-                  painter: _ToothPainter(),
-                ),
-              ),
-            ],
+          width: 100,
+          height: 100,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Image.asset(
+              'assets/images/logo.png',
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  color: AppColors.primaryEnd.withOpacity(0.1),
+                  child: const Icon(Icons.broken_image, color: AppColors.primaryEnd, size: 40),
+                );
+              },
+            ),
           ),
         ),
         const SizedBox(height: 16),
@@ -138,93 +135,6 @@ class _LogoSection extends StatelessWidget {
       ],
     );
   }
-}
-
-class _BubblePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFF2E6DD1)
-      ..style = PaintingStyle.fill;
-
-    final path = Path();
-    final cx = size.width / 2;
-    final cy = size.height / 2;
-    final r = size.width / 2;
-
-    path.addOval(Rect.fromCircle(center: Offset(cx, cy - 4), radius: r * 0.85));
-    // Chat bubble tail
-    path.moveTo(cx - 12, size.height * 0.78);
-    path.lineTo(cx - 20, size.height);
-    path.lineTo(cx + 8, size.height * 0.82);
-    path.close();
-    canvas.drawPath(path, paint);
-
-    // Drop shadow
-    canvas.drawShadow(path, const Color(0x402E6DD1), 12, false);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter old) => false;
-}
-
-class _ToothPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.fill;
-
-    final path = Path();
-    path.moveTo(size.width * 0.5, size.height * 0.1);
-    path.cubicTo(
-      size.width * 0.2,
-      size.height * 0.1,
-      size.width * 0.05,
-      size.height * 0.35,
-      size.width * 0.05,
-      size.height * 0.6,
-    );
-    path.cubicTo(
-      size.width * 0.05,
-      size.height * 0.85,
-      size.width * 0.2,
-      size.height,
-      size.width * 0.5,
-      size.height,
-    );
-    path.cubicTo(
-      size.width * 0.8,
-      size.height,
-      size.width * 0.95,
-      size.height * 0.85,
-      size.width * 0.95,
-      size.height * 0.6,
-    );
-    path.cubicTo(
-      size.width * 0.95,
-      size.height * 0.35,
-      size.width * 0.8,
-      size.height * 0.1,
-      size.width * 0.5,
-      size.height * 0.1,
-    );
-    canvas.drawPath(path, paint);
-
-    // Center dividing line
-    final linePaint = Paint()
-      ..color = const Color(0xFF2E6DD1)
-      ..strokeWidth = 1.5
-      ..strokeCap = StrokeCap.round;
-    canvas.drawLine(
-      Offset(size.width * 0.5, size.height * 0.55),
-      Offset(size.width * 0.5, size.height),
-      linePaint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter old) => false;
 }
 
 class _InputField extends StatelessWidget {
