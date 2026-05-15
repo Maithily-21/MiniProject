@@ -25,6 +25,32 @@ It features a professional Flutter mobile app, a FastAPI python backend, and an 
 
 ---
 
+## 📁 Project Structure
+
+```text
+MiniProject/
+│
+├── backend/                   # FastAPI Python Server
+│   ├── core/                  # Configurations
+│   ├── data/                  # Kaggle Dataset (Oral Diseases)
+│   ├── database/              # SQLite Database
+│   ├── models/                # PyTorch Model architectures
+│   ├── routes/                # FastAPI endpoint routers
+│   └── services/              # AI Inference & business logic
+│
+└── provident_flutter/         # Mobile Application
+    └── provident_flutter/
+        ├── assets/            # Fonts, Images, and Logos
+        └── lib/
+            ├── models/        # Data models (AnalysisResult, etc.)
+            ├── providers/     # State management (ChatProvider)
+            ├── services/      # API connections & PDF generation
+            ├── views/         # UI Screens (Chat, Report, Sign In)
+            └── widgets/       # Reusable UI components
+```
+
+---
+
 ## 💻 1. Backend Setup (FastAPI)
 
 The backend is responsible for running the PyTorch AI models (U-Net, CNNs).

@@ -3,12 +3,21 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import '../models/analysis_result.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/services.dart';
 
 class PdfService {
   static Future<void> generateAndPrintReport(AnalysisResult result) async {
     final pdf = pw.Document();
 
     final date = DateFormat('MMMM dd, yyyy - hh:mm a').format(DateTime.now());
+
+    pw.MemoryImage? logoImage;
+    try {
+      final ByteData bytes = await rootBundle.load('assets/images/logo.png');
+      logoImage = pw.MemoryImage(bytes.buffer.asUint8List());
+    } catch (e) {
+      // Fallback if logo cannot be loaded
+    }
 
     pdf.addPage(
       pw.Page(
@@ -39,21 +48,27 @@ class PdfService {
                               fontSize: 14, color: PdfColors.grey700)),
                     ],
                   ),
-                  pw.Container(
-                    width: 50,
-                    height: 50,
-                    decoration: const pw.BoxDecoration(
-                      color: PdfColors.blue50,
-                      shape: pw.BoxShape.circle,
-                    ),
-                    child: pw.Center(
-                      child: pw.Text('AI',
-                          style: pw.TextStyle(
-                              fontSize: 24,
-                              fontWeight: pw.FontWeight.bold,
-                              color: PdfColors.blue800)),
-                    ),
-                  ),
+                  logoImage != null
+                      ? pw.Container(
+                          width: 50,
+                          height: 50,
+                          child: pw.Image(logoImage, fit: pw.BoxFit.contain),
+                        )
+                      : pw.Container(
+                          width: 50,
+                          height: 50,
+                          decoration: const pw.BoxDecoration(
+                            color: PdfColors.blue50,
+                            shape: pw.BoxShape.circle,
+                          ),
+                          child: pw.Center(
+                            child: pw.Text('AI',
+                                style: pw.TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: pw.FontWeight.bold,
+                                    color: PdfColors.blue800)),
+                          ),
+                        ),
                 ],
               ),
               pw.SizedBox(height: 20),
