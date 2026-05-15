@@ -59,8 +59,8 @@ def detect_cavity(image_path: str, mask_array: np.ndarray) -> dict:
         prob  = torch.sigmoid(logit).item()         # scalar ∈ [0, 1]
 
     # Classification
-    # Lowered threshold to 0.4 to improve sensitivity for small caries
-    class_idx   = 1 if prob >= 0.4 else 0
+    # Increased threshold to 0.75 to reduce false positive caries detections from shadows
+    class_idx   = 1 if prob >= 0.75 else 0
     label       = CAVITY_LABELS[class_idx]
     confidence  = prob if class_idx == 1 else (1.0 - prob)
 
